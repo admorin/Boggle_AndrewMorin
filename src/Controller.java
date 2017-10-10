@@ -21,6 +21,8 @@ public class Controller extends Application {
     private VBox game = new VBox();
     private ToggleGroup group = new ToggleGroup();
     private Library library = new Library(1);
+    private Board board;
+    private VBox pieces;
 
     Text text2 = new Text("4x4 Chosen");
     Text text3 = new Text("5x5 Chosen");
@@ -87,9 +89,13 @@ public class Controller extends Application {
         Button check = new Button("Check Word");
         check.setOnAction(p -> handleCheck(p));
         if(selected == four){
-            game.getChildren().addAll(text2, wordCheck, check);
+            board = new Board(4);
+            pieces = board.returnVBox();
+            game.getChildren().addAll(text2, wordCheck, check, pieces);
         } else {
-            game.getChildren().addAll(text3, wordCheck, check);
+            board = new Board(5);
+            pieces = board.returnVBox();
+            game.getChildren().addAll(text3, wordCheck, check, pieces);
         }
         stage.setScene(gameScene);
     }
