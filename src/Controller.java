@@ -1,12 +1,14 @@
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class Controller extends Application {
@@ -17,15 +19,17 @@ public class Controller extends Application {
     private RadioButton four = new RadioButton();
     private RadioButton five = new RadioButton();
     private Text text = new Text();
+    private Scene startScene;
     private Scene gameScene;
     private VBox game = new VBox();
     private ToggleGroup group = new ToggleGroup();
     private Library library = new Library(1);
+    private String[] allWords = library.grabAll();
     private Board board;
     private VBox pieces;
-
-    Text text2 = new Text("4x4 Chosen");
-    Text text3 = new Text("5x5 Chosen");
+    private HBox fullBox = new HBox();
+    private Text text2 = new Text("4x4 Chosen");
+    private Text text3 = new Text("5x5 Chosen");
 
     public static void main (String[] args){
         launch(args);
@@ -60,10 +64,11 @@ public class Controller extends Application {
 
         vBoxName.getChildren().addAll(text, vBoxButtons, buttonStartGame);
 
-        gameScene = new Scene(game, 250, 200);
+        startScene = new Scene(game, 250, 200);
 
         stage.setTitle("Boggle Game");
         stage.setScene(new Scene(vBoxName, 250, 200));
+        stage.setResizable(false);
         stage.show();
     }
 
@@ -74,9 +79,7 @@ public class Controller extends Application {
     private void handleCheck(ActionEvent p){
         String checkWord = wordCheck.getText();
         Text textField = new Text();
-
-        System.out.println(checkWord);
-        if(library.isWord(checkWord) == true){
+        if(board.checkValid(checkWord) == true){
             textField.setText(checkWord);
         } else {
             textField.setText("Not Here");
@@ -88,15 +91,23 @@ public class Controller extends Application {
         Toggle selected = group.getSelectedToggle();
         Button check = new Button("Check Word");
         check.setOnAction(p -> handleCheck(p));
+        int multiply;
         if(selected == four){
             board = new Board(4);
             pieces = board.returnVBox();
-            game.getChildren().addAll(text2, wordCheck, check, pieces);
+            game.getChildren().addAll(text2, wordCheck, check);
+            game.setAlignment(Pos.TOP_CENTER);
+            multiply = 4;
         } else {
             board = new Board(5);
             pieces = board.returnVBox();
-            game.getChildren().addAll(text3, wordCheck, check, pieces);
+            game.getChildren().addAll(text3, wordCheck, check);
+            game.setAlignment(Pos.TOP_CENTER);
+            multiply = 5;
         }
+        board.findAll(allWords);
+        gameScene = new Scene(fullBox, (80*multiply)+200, (80*multiply)+10);
+        fullBox.getChildren().addAll(pieces, game);
         stage.setScene(gameScene);
     }
 }
