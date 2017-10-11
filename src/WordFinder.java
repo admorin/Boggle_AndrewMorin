@@ -56,6 +56,10 @@ public class WordFinder {
         dfs(board, visited, str, i+1, j, trie);
         dfs(board, visited, str, i, j-1, trie);
         dfs(board, visited, str, i, j+1, trie);
+        dfs(board, visited, str, i-1, j-1, trie);
+        dfs(board, visited, str, i-1, j+1, trie);
+        dfs(board, visited, str, i+1, j-1, trie);
+        dfs(board, visited, str, i+1, j+1, trie);
         visited[i][j]=false;
     }
 }

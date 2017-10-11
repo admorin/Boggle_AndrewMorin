@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class Board {
     private char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+    private char[] consanants = "bcdfghjklmnpqrstuvwxyz".toCharArray();
+    private char[] vowels = "aeiou".toCharArray();
     private int[] pickedLetters = new int[26];
     private char[][] charArray;
     private VBox pieces = new VBox();
