@@ -48,7 +48,11 @@ public class WordFinder {
             return;
 
         if(trie.search(str)){
-            result.add(str);
+            if(!result.contains(str) && str.length() > 2){
+                result.add(str);
+                System.out.println(str);
+
+            }
         }
 
         visited[i][j]=true;

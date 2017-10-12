@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class Board {
     private char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private char[] consanants = "bcdfghjklmnpqrstuvwxyz".toCharArray();
-    private char[] vowels = "aeiou".toCharArray();
+    private String consanants = "bcdfghjklmnpqrstuvwxyz";
+    private String vowels = "aeiou";
     private int[] pickedLetters = new int[26];
     private char[][] charArray;
     private VBox pieces = new VBox();
@@ -25,14 +25,18 @@ public class Board {
             rows[i] = hbox;
             for(int j = 0; j < size; j++){
                 int valid = 0;
+                int probability = (int) (Math.random() * 100);
                 while(valid == 0){
                     int picked = (int) (Math.random() * 26);
                     if(pickedLetters[picked] != 4){
-                        hbox.setPadding(new Insets(0, 10, 0, 0));
-                        hbox.getChildren().add(new Piece(alphabet[picked]).returnIV());
-                        charArray[i][j] = alphabet[picked];
-                        pickedLetters[picked]++;
-                        valid = 1;
+                        if(probability >= 40 && (vowels.indexOf(alphabet[picked]) >= 0)
+                        || (probability < 40 && consanants.indexOf(alphabet[picked]) >= 0)){
+                            hbox.setPadding(new Insets(0, 10, 0, 0));
+                            hbox.getChildren().add(new Piece(alphabet[picked]).returnIV());
+                            charArray[i][j] = alphabet[picked];
+                            pickedLetters[picked]++;
+                            valid = 1;
+                        }
                     }
                 }
             }
