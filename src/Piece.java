@@ -1,4 +1,10 @@
+/**
+ * Andrew Morin
+ * October 10, 2017
+ */
+
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -11,21 +17,18 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-/**
- * Created by Andrew on 10/9/2017.
- */
 public class Piece extends Pane {
     private char value;
     private ImageView image;
     private Rectangle rect = new Rectangle();
     private Rectangle rectarea = new Rectangle();
     private StackPane fullPiece = new StackPane();
-    private boolean picked = false;
     private char[] guess;
     private Text text;
     private Background background;
 
     public Piece (char letter, char[] guess){
+        //I create the background image for the pieces.
         Image image = new Image(Controller.class.getResourceAsStream("words/pieceBack2.jpg"));
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
@@ -34,11 +37,14 @@ public class Piece extends Pane {
         this.guess = guess;
         this.value = letter;
         this.image = makeImage(letter);
+        //Adding action listeners to the pieces.
+        fullPiece.setAlignment(Pos.CENTER);
         fullPiece.setOnDragDetected(e -> handleTwo(e));
         rectarea.setOnMouseDragEntered(e -> handleThree(e));
     }
 
     private void handleTwo(MouseEvent e) {
+        //Initial choice.
         if(fullPiece.getOpacity() == 1){
             guess[0] = value;
             fullPiece.setOpacity(.25);
@@ -47,6 +53,7 @@ public class Piece extends Pane {
     }
 
     private void handleThree(MouseDragEvent e) {
+        //Subsequent letters.
         for(int i = 0; i < 25; i++){
             if(guess[i] == '\0' && fullPiece.getOpacity() == 1){
                 guess[i] = value;
@@ -57,6 +64,7 @@ public class Piece extends Pane {
     }
 
     private ImageView makeImage (char c){
+        //Creates the piece as a stack pane.
         char upper = Character.toUpperCase(c);
         String letter = Character.toString(upper);
         text = new Text(letter);

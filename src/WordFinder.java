@@ -1,11 +1,18 @@
+/**
+ * Andrew Morin
+ * October 10, 2017
+ */
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Created by Andrew on 10/10/2017.
+ * WordFinder uses Trie to find all of the words in the 2D array and stores them in a list for me to 
+ * search through later on to verify words that the user guesses.
  */
+
 public class WordFinder {
     Set<String> result = new HashSet<String>();
 
@@ -24,14 +31,17 @@ public class WordFinder {
 
         for(int i=0; i<m; i++){
             for(int j=0; j<n; j++){
-                dfs(board, visited, "", i, j, trie);
+                depthFirstSearch(board, visited, "", i, j, trie);
             }
         }
 
         return new ArrayList<String>(result);
     }
 
-    public void dfs(char[][] board, boolean[][] visited, String str, int i, int j, Trie trie){
+    //This method uses a searching algorithm to recurse it's way through the array.
+    //It uses visited markers to ensure places aren't revisited.
+    
+    public void depthFirstSearch(char[][] board, boolean[][] visited, String str, int i, int j, Trie trie){
         int m=board.length;
         int n=board[0].length;
 
@@ -53,16 +63,18 @@ public class WordFinder {
 
             }
         }
+        
+        //The recursion aspect, searching in all 8 directions.
 
         visited[i][j]=true;
-        dfs(board, visited, str, i-1, j, trie);
-        dfs(board, visited, str, i+1, j, trie);
-        dfs(board, visited, str, i, j-1, trie);
-        dfs(board, visited, str, i, j+1, trie);
-        dfs(board, visited, str, i-1, j-1, trie);
-        dfs(board, visited, str, i-1, j+1, trie);
-        dfs(board, visited, str, i+1, j-1, trie);
-        dfs(board, visited, str, i+1, j+1, trie);
+        depthFirstSearch(board, visited, str, i-1, j, trie);
+        depthFirstSearch(board, visited, str, i+1, j, trie);
+        depthFirstSearch(board, visited, str, i, j-1, trie);
+        depthFirstSearch(board, visited, str, i, j+1, trie);
+        depthFirstSearch(board, visited, str, i-1, j-1, trie);
+        depthFirstSearch(board, visited, str, i-1, j+1, trie);
+        depthFirstSearch(board, visited, str, i+1, j-1, trie);
+        depthFirstSearch(board, visited, str, i+1, j+1, trie);
         visited[i][j]=false;
     }
 }

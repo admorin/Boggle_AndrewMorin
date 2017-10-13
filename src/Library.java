@@ -1,15 +1,18 @@
+/**
+ * Andrew Morin
+ * October 10, 2017
+ */
+
 import java.io.*;
 import java.util.LinkedList;
 
-public class Library {
-    private int made;
-    private int lineCount = 0;
+class Library {
+    /**
+     * Library just turns the txt file given to us and turns it into a linked list of strings. This is essential
+     * to my process of finding the correct words.
+     */
 
-    public Library (int made){
-        this.made = made;
-    }
-
-    public String[] grabAll(){
+    String[] grabAll(){
         LinkedList<String> words = new LinkedList<>();
         try{
             BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("words/OpenEnglishWordList.txt")));
@@ -18,11 +21,9 @@ public class Library {
                 words.add(str.toLowerCase());
             }
         } catch (IOException e) {
-            System.out.print("nope");
+            System.out.print("File not found!");
         }
 
-        String[] array = words.toArray(new String[words.size()]);
-
-        return array;
+        return words.toArray(new String[words.size()]);
     }
 }
