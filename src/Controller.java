@@ -5,24 +5,31 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.image.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
-import javafx.stage.Popup;
-import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.awt.*;
+
 public class Controller extends Application {
 
-    private static int startTime = 5;
+    private static int startTime = 180;
     private int firstGame = 0;
     private int seconds = startTime;
     private int score = 0;
@@ -51,6 +58,9 @@ public class Controller extends Application {
     private VBox pieces;
     private HBox fullBox = new HBox();
     private Label scoreLabel = new Label();
+    private VBox guesses = new VBox();
+    private ScrollPane guessPane = new ScrollPane(guesses);
+    private Background background;
 
     public static void main (String[] args){
         launch(args);
@@ -58,20 +68,32 @@ public class Controller extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        Image image = new Image(Controller.class.getResourceAsStream("words/stageBack.jpg"));
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        background = new Background(backgroundImage);
+
+
         stage = primaryStage;
         endGame.initModality(Modality.WINDOW_MODAL);
 
-
         text.setText("Choose the board size:");
         scoreLabel.setText("Score: " + score);
+        scoreLabel.setTextFill(Color.SLATEGRAY);
+        scoreLabel.setFont(Font.font("Calibri", FontWeight.BOLD,  16));
+
+        countdown.setTextFill(Color.SLATEGRAY);
+        countdown.setFont(Font.font("Calibri", FontWeight.BOLD, 16));
+
+        guessPane.setPrefViewportHeight(200);
+        guessPane.setPrefViewportWidth(100);
 
         buttonStartGame = new Button("Confirm Size");
         buttonStartGame.setOnAction(e -> handle(e));
 
         four.setText("4x4");
-        four.setOnMouseClicked(e -> handleMouse(e));
         five.setText("5x5");
-        five.setOnMouseClicked(e -> handleMouse(e));
         four.setToggleGroup(group);
         four.setSelected(true);
         five.setToggleGroup(group);
@@ -99,7 +121,7 @@ public class Controller extends Application {
         vBoxName.getChildren().addAll(text, vBoxButtons, buttonStartGame);
 
         startScene = new Scene(game, 250, 200);
-        begin = new Scene(vBoxName, 250, 200);
+        begin = new Scene(vBoxName, 300, 150);
         endGameScene = new Scene(popUpV, 300, 150);
 
         close.setOnAction(e -> handleEnd(e, begin));
@@ -112,7 +134,23 @@ public class Controller extends Application {
         stage.show();
     }
 
-    private void handleMouse(MouseEvent e) {
+    private void handleTwo(MouseEvent e) {
+        wordCheck.setText(board.resetPieces());
+        String checkWord = wordCheck.getText();
+        Text textField = new Text();
+        if(board.checkValid(checkWord) == true){
+            score = score+(checkWord.length() - 2);
+            textField.setText(checkWord.toUpperCase());
+            textField.setFont(new Font("Calibri", 24));
+            textField.setFill(Color.GREEN);
+        } else {
+            textField.setText(checkWord.toUpperCase());
+            textField.setFont(new Font("Calibri", 24));
+            textField.setFill(Color.RED);
+        }
+        scoreLabel.setText("Score: " + score);
+        guesses.getChildren().add(textField);
+        guessPane.setVvalue(1.0);
 
     }
 
@@ -138,7 +176,8 @@ public class Controller extends Application {
                     time.stop();
                     gameOverLabel.setText("Game Over! Your final score was: " + score);
                     stage.setScene(endGameScene);
-                    seconds = 5;
+                    seconds = 180;
+                    guesses.getChildren().clear();
                 }
             }
         });
@@ -153,6 +192,10 @@ public class Controller extends Application {
             Platform.exit();
         } else {
             stage.setScene(scene);
+            game.getChildren().clear();
+            score = 0;
+            scoreLabel.setText("Score: " + score);
+            wordCheck.clear();
         }
     }
 
@@ -161,54 +204,59 @@ public class Controller extends Application {
         Text textField = new Text();
         if(board.checkValid(checkWord) == true){
             score = score+(checkWord.length() - 2);
-            textField.setText(checkWord);
+            textField.setText(checkWord.toUpperCase());
+            textField.setFont(new Font("Calibri", 24));
+            textField.setFill(Color.GREEN);
         } else {
-            textField.setText("Not Here");
+            textField.setText(checkWord.toUpperCase());
+            textField.setFont(new Font("Calibri", 24));
+            textField.setFill(Color.RED);
         }
         scoreLabel.setText("Score: " + score);
-        game.getChildren().add(textField);
+        guesses.getChildren().add(textField);
+        guessPane.setVvalue(1.0);
     }
 
     private void handle(ActionEvent e) {
         Toggle selected = group.getSelectedToggle();
         check.setOnAction(p -> handleCheck(p));
-        int multiply;
+        int size;
+
+        if(selected == four) size = 4;
+        else size = 5;
+
+        board = new Board(size);
+
         if(selected == four && firstGame == 0){
-            board = new Board(4);
             pieces = board.returnVBox();
-            game.getChildren().addAll(countdown, scoreLabel, wordCheck, check);
             game.setAlignment(Pos.TOP_CENTER);
-            multiply = 4;
-            gameScene = new Scene(fullBox, (80*multiply)+200, (80*multiply)+10);
+            gameScene = new Scene(fullBox, (100*size)+200, (100*size)+10);
             firstGame++;
-            fullBox.getChildren().addAll(pieces, game);
         } else if(selected == five && firstGame == 0) {
-            board = new Board(5);
             pieces = board.returnVBox();
-            game.getChildren().addAll(countdown, scoreLabel, wordCheck, check);
             game.setAlignment(Pos.TOP_CENTER);
-            multiply = 5;
-            gameScene = new Scene(fullBox, (80*multiply)+200, (80*multiply)+10);
+            gameScene = new Scene(fullBox, (100*size)+200, (100*size)+10);
             firstGame++;
-            fullBox.getChildren().addAll(pieces, game);
         } else if (selected == four){
             fullBox.getChildren().removeAll(pieces,game);
-            board = new Board(4);
-            pieces = board.returnVBox();
-            stage.setWidth(520);
-            stage.setHeight(359);
-            fullBox.getChildren().addAll(pieces, game);
-        } else {
-            fullBox.getChildren().removeAll(pieces,game);
-            board = new Board(5);
             pieces = board.returnVBox();
             stage.setWidth(600);
             stage.setHeight(439);
-            fullBox.getChildren().addAll(pieces, game);
+        } else {
+            fullBox.getChildren().removeAll(pieces,game);
+            pieces = board.returnVBox();
+            stage.setWidth(700);
+            stage.setHeight(539);
         }
+        game.getChildren().addAll(countdown, scoreLabel, wordCheck, check, guessPane);
+        game.setPadding(new Insets(5,5,5,5));
+        game.setSpacing(5);
+        fullBox.getChildren().addAll(pieces, game);
+        pieces.setOnMouseReleased(ev -> handleTwo(ev));
         board.findAll(allWords);
         timer();
+        game.setBackground(Background.EMPTY);
+        fullBox.setBackground(background);
         stage.setScene(gameScene);
-        System.out.println(stage.getHeight());
     }
 }

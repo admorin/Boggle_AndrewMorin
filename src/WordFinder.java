@@ -50,7 +50,6 @@ public class WordFinder {
         if(trie.search(str)){
             if(!result.contains(str) && str.length() > 2){
                 result.add(str);
-                System.out.println(str);
 
             }
         }
